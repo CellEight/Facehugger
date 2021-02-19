@@ -1,0 +1,36 @@
+Python Exploitation Framework
+-----------------------------
+
+Description:
+    Having to download files onto a target machine can be both annoying and undesirable as it
+    leaves potential evidence for forensic investigators and risks activating antivirus programs
+    running on the machine. To attempt to mitigate these issues I propose a command line 
+    post exploitation framework that can be loaded into from a remote https repository using a single
+    concise bash command, provides natively a sophisticated suite of post exploitation tools
+    for enumeration and priv-esc and gives the user the ability to download and run any other python
+    script that the user desires from their remote machine while also remaining totally in memory.
+    The framework will also permit easy addition of novel tools via modularity.
+
+
+Generic Classes:
+    Terminal - Class instantiated on load, provides command line functionality, motd etc.
+    BaseModule - A generic parent class that provides default module functionality 
+        Exploit - A generic class designed to provide functionality that attempts priv-esc exploitation
+        Enumerate - A generic class designed to scan the host for Priv-Esc vulnerablities or
+                    to scan remote hosts for the purpose of pivoting.
+        Exfiltrate - A generic class for data exfiltration
+    External - A class to handle the download and execution of remote python scripts
+
+Initial Classes:
+    SuidEnum - a class that scans the file system for suid binaries and searches for known exploits on gtfo bins
+    SuidExploit - a class that acts as suid enum but actually attempts to exploit the vulnerabilities found
+    SudoEnum - scans the machine for known sudo misconfigurations and unpatched CVEs
+    SudoExploit - as with sudoenum but attempts to exploit vulenerabilties
+    PortEnum - a simple port scanner
+    DNSExfil - a module that lets users exfiltrate data to a remote host using DNS queries
+
+1. Define Base Classes
+2. Write basic terminal interface
+3. Write external module
+4. Write 3 Children of Base
+5. Write up initial classes

