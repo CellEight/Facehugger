@@ -1,37 +1,33 @@
-# Libraries
-# ---------
-# 2 libraries to find them all
-import os
-import subprocess
-# 2 libraries to scrape them all
-import requests
-from bs4 import BeautifulSoup
-# 1 library to make things colourful
-from termcolor import colored
-# And in the darkness pwn them
-
-# *cough* oh and these  *cough*
-import re, sys
-
-
 class SuidEnum(BaseModule):
     def __init__(self):
         BaseModule.__init__(self)
-        self.name = "suid-enum"
+        self.name = "suidenum"
         self.url = "https://gtfobins.github.io/gtfobins/"
         # define attributes and set initial values
         self.attr['exploit'] = False
     
     def usage(self):
         print("When I can be arsed I will add some usage information for this module here")
+    
+    def setAttribute(self, attr, val):
+        """ set attribute to user specified value """
+        attr, val = attr.lower().replace(" ", ""), val.lower().repalce(" ", "")
+        if self.validate(attr, val):
+            if attr == 'exploit' and val == 'false':
+                self.attr['exploit'] = False
+                return True
+            elif attr == 'exploit' and val == 'true':
+                self.attr['exploit'] = True
+                return True
+        else:
+            return False
 
     def validate(self, attr, val):
+        """ Validate supplied user supplied attribute and value """
         if attr == 'exploit':
-            if val.lower() == 'true':
-                self.attr['exploit'] == True
+            if val == 'true':
                 return True
-            elif val.lower() == 'false':
-                self.attr['exploit'] == False
+            elif val == 'false':
                 return True
             else:
                 print(f'Invalid value for attribute {attr}')
@@ -88,4 +84,4 @@ class SuidEnum(BaseModule):
                 cmd = re.sub('^./','',cmd)
                 os.system(cmd)
 
-self.loaded_modules['suid-enum'] = SuidEnum()
+self.loaded_modules['suidenum'] = SuidEnum()

@@ -6,6 +6,8 @@ import requests
 from bs4 import BeautifulSoup
 from termcolor import colored
 import re, sys
+import signal
+import socket
 
 class Terminal:
     """ Provides methods that provide command line functionality to let the user 
@@ -37,6 +39,8 @@ class Terminal:
     def runCommand(self, cmd):
         """ Parses command and performs the specified action or prints error if malformed"""
         cmd = cmd.strip().split(' ')
+        if cmd[0] == '':
+            return
         if cmd[0] == "help":
             # Display help
             self.help()
@@ -51,14 +55,14 @@ class Terminal:
             if len(cmd) == 2:
                 self.loadModule(cmd[1])
             else:
-                self.loadModule(cmd[2],cmd[3])
-        elif cmd[0] == "set" and cmd[1] == "remote" and len(cmd) == 3:
+                self.loadModule(cmd[1],cmd[2])
+        elif len(cmd) == 3 and cmd[0] == "set" and cmd[1] == "remote":
             # Set the remote host
             self.setRemoteHost(cmd[2])
-        elif cmd[0] == "set" and cmd[1] == "module" and len(cmd) == 3:
+        elif len(cmd) == 3 and cmd[0] == "set" and cmd[1] == "module":
             # Set the current module
             self.setModule(cmd[2])
-        elif cmd[0] == "set" and cmd[1] == "attr" and len(cmd) == 4:
+        elif len(cmd) == 4 and cmd[0] == "set" and cmd[1] == "attr": 
             #  set the specified module attribute
             self.setModuleAttribute(cmd[2],cmd[3])
         elif cmd[0] == "run":
@@ -102,8 +106,17 @@ class Terminal:
         if not host:
             host = self.remote_host
         print(f'[*] Loading module {module} from {host}')
-        raw = requests.get("http://"+host+"/modules/"+module).text
-        exec(raw)
+        raw = None
+        try:
+            raw = requests.get("http://"+host+"/modules/"+module+".py")
+        except requests.exceptions.ConnectionError:
+            print(f"[!] Error! Failed to connect to remote host at {host}")
+            return
+        if raw.status_code == 200:
+            exec(raw.text) # wow, such security, amazing, hacker proof, wow
+        else:
+            print(f'[!] Error! Module {module} not found!')
+            return False
 
     def isValidIpAddr(self, addr):
         """ Check using a regex that the supplied string is a valid ip address """
@@ -213,5 +226,6 @@ class BaseModule:
         raise NotImplementedError
 
 if __name__ == "__main__":
+    signal.signal(signal.SIGINT, lambda signum, stack : exit(1))
     term = Terminal("127.0.0.1")
     term.commandLine()
